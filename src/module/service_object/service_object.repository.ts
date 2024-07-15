@@ -39,9 +39,6 @@ export class ServiceObjectRepository {
       ...args,
       ts_updated: new Date(),
     };
-    if (args.status_id === 1 && !args.ts_completed) {
-      updateData.ts_completed = new Date();
-    }
     delete updateData.ts_inserted;
 
     return this.prisma.serviceObject.upsert({

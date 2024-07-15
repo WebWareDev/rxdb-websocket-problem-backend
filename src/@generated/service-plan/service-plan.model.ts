@@ -12,16 +12,7 @@ export class ServicePlan {
     sp_id!: string;
 
     @Field(() => String, {nullable:false})
-    resort_id!: string;
-
-    @Field(() => String, {nullable:false})
     description!: string;
-
-    @Field(() => Int, {nullable:false})
-    status_id!: number;
-
-    @Field(() => Int, {nullable:true})
-    owner_id!: number | null;
 
     @Field(() => Date, {nullable:false})
     ts_inserted!: Date;
@@ -29,20 +20,11 @@ export class ServicePlan {
     @Field(() => Date, {nullable:false})
     ts_updated!: Date;
 
-    @Field(() => Date, {nullable:true})
-    ts_completed!: Date | null;
-
-    @Field(() => Date, {nullable:true})
-    ts_assigned!: Date | null;
-
     @Field(() => Boolean, {nullable:false})
     deleted!: boolean;
 
     @Field(() => Int, {nullable:false})
     sort_id!: number;
-
-    @Field(() => Date, {nullable:true})
-    ts_deleted!: Date | null;
 
     @Field(() => [ServiceObject], {nullable:true})
     service_object?: Array<ServiceObject>;

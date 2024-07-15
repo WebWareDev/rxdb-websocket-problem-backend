@@ -9,16 +9,7 @@ export class ServicePlanMaxOrderByAggregateInput {
     sp_id?: keyof typeof SortOrder;
 
     @Field(() => SortOrder, {nullable:true})
-    resort_id?: keyof typeof SortOrder;
-
-    @Field(() => SortOrder, {nullable:true})
     description?: keyof typeof SortOrder;
-
-    @Field(() => SortOrder, {nullable:true})
-    status_id?: keyof typeof SortOrder;
-
-    @Field(() => SortOrder, {nullable:true})
-    owner_id?: keyof typeof SortOrder;
 
     @Field(() => SortOrder, {nullable:true})
     ts_inserted?: keyof typeof SortOrder;
@@ -27,17 +18,8 @@ export class ServicePlanMaxOrderByAggregateInput {
     ts_updated?: keyof typeof SortOrder;
 
     @Field(() => SortOrder, {nullable:true})
-    ts_completed?: keyof typeof SortOrder;
-
-    @Field(() => SortOrder, {nullable:true})
-    ts_assigned?: keyof typeof SortOrder;
-
-    @Field(() => SortOrder, {nullable:true})
     deleted?: keyof typeof SortOrder;
 
     @Field(() => SortOrder, {nullable:true})
     sort_id?: keyof typeof SortOrder;
-
-    @Field(() => SortOrder, {nullable:true})
-    ts_deleted?: keyof typeof SortOrder;
 }

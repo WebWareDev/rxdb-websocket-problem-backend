@@ -37,8 +37,6 @@ export class ServiceObjectResolver {
     @Args('checkpoint') checkpoint: ServiceObjectCP,
     @Args('limit', { type: () => Int }) limit: number,
   ) {
-
-    const resortIds = ['8bbf66d8-d894-47df-a12e-c00f4c1f0e60'];
     const cpData = {
       sp_id: checkpoint.sp_id ?? '',
       so_id: checkpoint.so_id ?? '',
@@ -48,20 +46,7 @@ export class ServiceObjectResolver {
     const clause = getPullClause(cpData.sort_id, cpData.ts_updated, limit);
     const totalClause = {
       orderBy: clause.orderBy,
-      where: {
-        AND: [
-          {
-            service_plan: {
-              is: {
-                resort_id: {
-                  in: resortIds,
-                },
-              },
-            },
-          },
-          clause.where,
-        ],
-      },
+      where: clause.where,
       take: limit,
     };
     const sortedDocs = await this.service.getServiceObjects(totalClause);
@@ -84,9 +69,7 @@ export class ServiceObjectResolver {
   async pushServiceObject(
     @Args('writeRows', { type: () => [ServiceObjectInputPushRow] })
     writeRows: ServiceObjectInputPushRow[],
-    @Context('req') req: any,
   ): Promise<ServiceObject[]> {
-    const resortIds = ['8bbf66d8-d894-47df-a12e-c00f4c1f0e60'];
     const lastCP = {
       so_id: '',
       sp_id: '',
@@ -95,16 +78,9 @@ export class ServiceObjectResolver {
     };
     let conflicts = [];
     const writtenDocs = new Array<ServiceObject>();
-    const allObjects =
-      await this.service.filterServiceObjectsByResortIds(resortIds);
-    const allIds = allObjects.map((o) => o.sp_id);
 
     // iterate over writeRows and get newDocumentState
     for (const row of writeRows) {
-      if (!allIds.includes(row.newDocumentState.sp_id)) {
-        continue;
-      }
-
       const docSpId = row.newDocumentState.sp_id;
       const docSoId = row.newDocumentState.so_id;
       const docCurrentMaster = await this.service.getServiceObject({
@@ -118,14 +94,10 @@ export class ServiceObjectResolver {
 
       conflicts = getConflicts(docCurrentMaster, row.assumedMasterState);
       if (conflicts.length) {
-        const email = req.user?.accessToken.emails[0];
-        const logData = {
-          docCurrentMaster: docCurrentMaster,
-          assumedMasterState: row.assumedMasterState,
-          user: email,
-          ressource: 'service_object',
-        };
-        console.log(logData);
+        
+        console.log("conflicts", conflicts);
+        console.log("docCurrentMaster", docCurrentMaster);
+        console.log("row.assumedMasterState", row.assumedMasterState);
         break;
       }
 
@@ -140,6 +112,10 @@ export class ServiceObjectResolver {
       }
       writtenDocs.push(newdoc);
     }
+    console.log('streamServiceObject', JSON.stringify({streamServiceObject: {
+        documents: writtenDocs,
+        checkpoint: lastCP,
+      },}));
     this.pubSub.publish(this.STREAM_EVENT_NAME, {
       streamServiceObject: {
         documents: writtenDocs,
@@ -150,11 +126,12 @@ export class ServiceObjectResolver {
   }
 
   @Subscription(() => ServiceObjectBulk, {
-    async resolve(this: ServiceObjectResolver, payload, _variables, context) {
+    resolve: (payload, _variables, context) => {
       if (payload.streamServiceObject) {
         const docs = payload.streamServiceObject.documents;
         payload.streamServiceObject.documents = docs;
       }
+      console.log("payload", JSON.stringify(payload));
       return payload.streamServiceObject;
     },
   })

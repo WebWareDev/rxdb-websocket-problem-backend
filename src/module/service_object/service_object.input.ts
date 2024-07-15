@@ -7,12 +7,6 @@ export class ServiceObjectInput extends PartialType(ServiceObjectCreateInput) {
   @Field(() => String, { nullable: false })
   sp_id!: string;
 
-  @Field(() => Int, { nullable: false })
-  status_id!: number;
-
-  @Field(() => String, { nullable: false })
-  type_id!: string;
-
   @Field(() => AttachmentInput, { nullable: true })
   _attachments?: AttachmentInput;
 }

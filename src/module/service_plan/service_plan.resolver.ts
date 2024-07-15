@@ -42,20 +42,10 @@ export class ServicePlanResolver {
       ts_updated: checkpoint.ts_updated ?? new Date(0),
       sort_id: checkpoint.sort_id ?? 0,
     };
-    const resortIds = ['8bbf66d8-d894-47df-a12e-c00f4c1f0e60'];
     const clause = getPullClause(cpData.sort_id, cpData.ts_updated, limit);
     const totalClause = {
       orderBy: clause.orderBy,
-      where: {
-        AND: [
-          {
-            resort_id: {
-              in: resortIds,
-            },
-          },
-          clause.where,
-        ],
-      },
+      where: clause.where,
       take: limit,
     };
     const sortedDocs = await this.service.getServicePlans(totalClause);
@@ -77,10 +67,7 @@ export class ServicePlanResolver {
   async pushServicePlan(
     @Args('writeRows', { type: () => [ServicePlanInputPushRow] })
     writeRows: ServicePlanInputPushRow[],
-    @Context('req') req: any,
   ): Promise<ServicePlan[]> {
-
-    const resortIds = ['8bbf66d8-d894-47df-a12e-c00f4c1f0e60'];
     const lastCP = {
       sp_id: '',
       sort_id: 0,
@@ -91,9 +78,6 @@ export class ServicePlanResolver {
 
     // iterate over writeRows and get newDocumentState
     for (const row of writeRows) {
-      if (!resortIds.includes(row.newDocumentState.resort_id)) {
-        continue;
-      }
       const docId = row.newDocumentState.sp_id;
       const docCurrentMaster = await this.service.getServicePlan({
         where: {
@@ -103,31 +87,13 @@ export class ServicePlanResolver {
 
       conflicts = getConflicts(docCurrentMaster, row.assumedMasterState);
       if (conflicts.length) {
-        const email = req.user?.accessToken.emails[0];
-        const logData = {
-          docCurrentMaster: docCurrentMaster,
-          assumedMasterState: row.assumedMasterState,
-          user: email,
-          ressource: 'service_plan',
-        };
-        console.log(logData);
+        
+        console.log("conflicts", conflicts);
+        console.log("docCurrentMaster", docCurrentMaster);
+        console.log("row.assumedMasterState", row.assumedMasterState);
         break;
       }
-
       const doc = row.newDocumentState;
-
-      // if owner changes, update ts_assigned with new Date()
-      if (docCurrentMaster.owner_id !== doc.owner_id) {
-        doc.ts_assigned = new Date();
-      }
-      if (docCurrentMaster.status_id === 0 && doc.status_id === 1) {
-        doc.ts_completed = new Date();
-      }
-      if (docCurrentMaster.status_id === 1 && doc.status_id === 0) {
-        // now reopened
-        doc.ts_completed = null;
-      }
-
       const newdoc = await this.service.upsertServicePlan(doc);
 
       if (newdoc) {
@@ -137,15 +103,16 @@ export class ServicePlanResolver {
       }
       writtenDocs.push(newdoc);
     }
-
+    console.log('streamServicePlan', JSON.stringify({streamServicePlan: {
+        documents: writtenDocs,
+        checkpoint: lastCP,
+      },}));
     this.pubSub.publish(this.STREAM_EVENT_NAME, {
       streamServicePlan: {
         documents: writtenDocs,
         checkpoint: lastCP,
       },
     });
-
-    // logPushResults(writtenDocs, conflicts, writeRows);
     return conflicts;
   }
 
@@ -155,6 +122,8 @@ export class ServicePlanResolver {
         const docs = payload.streamServicePlan.documents;
         payload.streamServicePlan.documents = docs;
       }
+
+      console.log("payload", JSON.stringify(payload));
       return payload.streamServicePlan;
     },
   })

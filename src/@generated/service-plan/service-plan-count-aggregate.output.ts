@@ -9,16 +9,7 @@ export class ServicePlanCountAggregate {
     sp_id!: number;
 
     @Field(() => Int, {nullable:false})
-    resort_id!: number;
-
-    @Field(() => Int, {nullable:false})
     description!: number;
-
-    @Field(() => Int, {nullable:false})
-    status_id!: number;
-
-    @Field(() => Int, {nullable:false})
-    owner_id!: number;
 
     @Field(() => Int, {nullable:false})
     ts_inserted!: number;
@@ -27,19 +18,10 @@ export class ServicePlanCountAggregate {
     ts_updated!: number;
 
     @Field(() => Int, {nullable:false})
-    ts_completed!: number;
-
-    @Field(() => Int, {nullable:false})
-    ts_assigned!: number;
-
-    @Field(() => Int, {nullable:false})
     deleted!: number;
 
     @Field(() => Int, {nullable:false})
     sort_id!: number;
-
-    @Field(() => Int, {nullable:false})
-    ts_deleted!: number;
 
     @Field(() => Int, {nullable:false})
     _all!: number;

@@ -5,11 +5,5 @@ import { InputType } from '@nestjs/graphql';
 export class ServicePlanSumAggregateInput {
 
     @Field(() => Boolean, {nullable:true})
-    status_id?: true;
-
-    @Field(() => Boolean, {nullable:true})
-    owner_id?: true;
-
-    @Field(() => Boolean, {nullable:true})
     sort_id?: true;
 }

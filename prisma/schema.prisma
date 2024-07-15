@@ -15,28 +15,11 @@ datasource db {
 model ServiceObject {
   sp_id             String      @db.VarChar(40)
   so_id             String      @db.VarChar(40)
-  name              String      @db.VarChar(255)
   description       String      @db.VarChar(255)
-  type_id           String      @db.VarChar(40)
-  type_name         String?     @db.VarChar(255)
-  master_so_id      String      @db.VarChar(40)
-  status_id         Int
-  serial_number     String?     @db.VarChar(255)
-  latitude          Float?
-  longitude         Float?
-  track_name        String?     @db.VarChar(255)
-  position_number   Int?
-  machine_room_name String?     @db.VarChar(255)
-  img_dev           String?     @db.VarChar(255)
-  img_mnt           String?     @db.VarChar(255)
   ts_inserted       DateTime
   ts_updated        DateTime
-  ts_completed      DateTime?
   deleted           Boolean
   sort_id           Int         @default(autoincrement())
-  ts_deleted        DateTime?
-  vendor            String?     @db.VarChar(255)
-  build_year        Int?
   service_plan      ServicePlan @relation(fields: [sp_id], references: [sp_id], onUpdate: NoAction)
 
   @@id([sp_id, so_id])
@@ -46,17 +29,11 @@ model ServiceObject {
 
 model ServicePlan {
   sp_id          String          @id @db.VarChar(40)
-  resort_id      String          
   description    String          @db.VarChar(255)
-  status_id      Int
-  owner_id       Int?
   ts_inserted    DateTime
   ts_updated     DateTime
-  ts_completed   DateTime?
-  ts_assigned    DateTime?
   deleted        Boolean
   sort_id        Int             @default(autoincrement())
-  ts_deleted     DateTime?
   service_object ServiceObject[]
 
   @@index([sort_id])

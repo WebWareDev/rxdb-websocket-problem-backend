@@ -6,11 +6,5 @@ import { Float } from '@nestjs/graphql';
 export class ServicePlanAvgAggregate {
 
     @Field(() => Float, {nullable:true})
-    status_id?: number;
-
-    @Field(() => Float, {nullable:true})
-    owner_id?: number;
-
-    @Field(() => Float, {nullable:true})
     sort_id?: number;
 }

@@ -6,11 +6,5 @@ import { Int } from '@nestjs/graphql';
 export class ServicePlanSumAggregate {
 
     @Field(() => Int, {nullable:true})
-    status_id?: number;
-
-    @Field(() => Int, {nullable:true})
-    owner_id?: number;
-
-    @Field(() => Int, {nullable:true})
     sort_id?: number;
 }

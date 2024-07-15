@@ -22,18 +22,4 @@ export class ServiceObjectService {
   async createServiceObject(args: CreateOneServiceObjectArgs) {
     return await this.repository.createServiceObject(args);
   }
-
-  async filterServiceObjectsByResortIds(resortIds: string[]) {
-    return await this.repository.getServiceObjects({
-      where: {
-        service_plan: {
-          is: {
-            resort_id: {
-              in: resortIds,
-            },
-          },
-        },
-      },
-    });
-  }
 }
