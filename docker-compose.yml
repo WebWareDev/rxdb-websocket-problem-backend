@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  mariadb:
+    image: mariadb:latest
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: my_secret_password
+      MYSQL_DATABASE: rxdb_test
+      MYSQL_USER: db_user
+      MYSQL_PASSWORD: db_user_pass
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - webware_network
+ 
+volumes:
+  dbdata:
+ 
+networks:
+  webware_network:
+    driver: bridge
+    name: webware_network
